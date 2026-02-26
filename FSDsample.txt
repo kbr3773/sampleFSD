@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SHWP – Student Wellness Hub</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3f37c9;
+      --accent: #4895ef;
+      --bg: linear-gradient(135deg, #f0f4ff 0%, #e0eaff 100%);
+      --card: rgba(255,255,255,0.92);
+      --text: #1d3557;
+      --gray: #6c757d;
+      --success: #4cc9f0;
+      --warning: #f8961e;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .floating-symbols {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .symbol {
+      position: absolute;
+      font-size: 2.5rem;
+      opacity: 0.12;
+      animation: float 18s infinite linear;
+      color: var(--primary);
+    }
+
+    @keyframes float {
+      0%   { transform: translateY(110vh) rotate(0deg); }
+      100% { transform: translateY(-30vh) rotate(360deg); }
+    }
+
+    header {
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      color: white;
+      padding: 1.4rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(67,97,238,0.25);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 { font-size: 1.9rem; letter-spacing: -0.5px; }
+
+    nav button {
+      background: rgba(255,255,255,0.95);
+      color: var(--primary);
+      border: none;
+      padding: 0.75rem 1.4rem;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-left: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    nav button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(67,97,238,0.3);
+      background: white;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 2.5rem auto;
+      padding: 0 1.8rem;
+    }
+
+    .hidden { display: none !important; }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.4);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover { transform: translateY(-8px); }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.8rem; }
+
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.6rem; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      color: white;
+      padding: 0.9rem 1.8rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 16px rgba(67,97,238,0.25);
+    }
+
+    .btn:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 12px 28px rgba(67,97,238,0.4);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-success {
+      background: linear-gradient(90deg, #22c55e, #4ade80);
+    }
+
+    .form-group {
+      margin-bottom: 1.4rem;
+    }
+
+    label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text); }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 0.9rem 1.2rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: border 0.3s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67,97,238,0.15);
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.4rem;
+      margin: 2rem 0;
+    }
+
+    .metric-card {
+      background: white;
+      padding: 1.6rem;
+      border-radius: 14px;
+      text-align: center;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    }
+
+    .metric-number {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 0.4rem;
+    }
+
+    .status-good  { color: #22c55e; font-weight:600; }
+    .status-mid   { color: #f59e0b; font-weight:600; }
+    .status-low   { color: #ef4444; font-weight:600; }
+
+    footer {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--gray);
+      margin-top: 4rem;
+      border-top: 1px solid rgba(203,213,225,0.5);
+    }
+
+    #auth-screen {
+      max-width: 460px;
+      margin: 8rem auto 4rem;
+      text-align: center;
+      background: white;
+      padding: 3rem 2.5rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+    }
+
+    #role-toggle {
+      margin: 2rem 0;
+      font-size: 1.2rem;
+    }
+
+    #role-toggle label {
+      margin: 0 1.5rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="floating-symbols" id="symbols"></div>
+
+  <!-- Login Screen -->
+  <div id="auth-screen">
+    <h1 style="font-size:2.8rem; margin-bottom:1rem; color:var(--primary);">Wellness Hub</h1>
+    <p style="font-size:1.2rem; color:var(--gray); margin-bottom:2.5rem;">Support for mind, body & balance – 2026</p>
+
+    <div id="role-toggle">
+      <label><input type="radio" name="role" value="student" checked> Student</label>
+      <label><input type="radio" name="role" value="admin"> Admin</label>
+    </div>
+
+    <div class="form-group">
+      <input type="text" id="username" placeholder="Username or Email" value="student"/>
+    </div>
+    <div class="form-group">
+      <input type="password" id="password" placeholder="Password" value="demo"/>
+    </div>
+
+    <button class="btn" onclick="login()"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+  </div>
+
+  <!-- Main App -->
+  <div id="app" class="hidden">
+    <header>
+      <h1 id="page-title">Dashboard</h1>
+      <nav>
+        <button onclick="showSection('dashboard')"><i class="fas fa-home"></i> Dashboard</button>
+        <button onclick="showSection('resources')"><i class="fas fa-book-open"></i> Resources</button>
+        <button onclick="showSection('programs')"><i class="fas fa-dumbbell"></i> My Programs</button>
+        <button onclick="showSection('support')"><i class="fas fa-hand-holding-heart"></i> Support</button>
+        <button onclick="showSection('admin')" id="admin-btn" class="hidden"><i class="fas fa-cog"></i> Admin Panel</button>
+        <button onclick="logout()" style="background:linear-gradient(90deg,#ef4444,#f87171); color:white;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </nav>
+    </header>
+
+    <div class="container">
+
+      <!-- Dashboard -->
+      <section id="dashboard-section">
+        <h2 style="margin-bottom:1.5rem;">Welcome back, <span id="user-name">Student</span> 🌟</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Today's Mood Check</h3>
+            <p>How are you feeling right now?</p>
+            <div style="font-size:3.5rem; margin:1.5rem 0; display:flex; justify-content:center; gap:1.5rem;">
+              <span onclick="setMood('Great')" title="Great">😊</span>
+              <span onclick="setMood('Okay')" title="Okay">😐</span>
+              <span onclick="setMood('Struggling')" title="Struggling">😔</span>
+            </div>
+            <p>Current mood: <strong id="current-mood">Not set</strong></p>
+          </div>
+          <div class="card">
+            <h3>Your Wellness Snapshot</h3>
+            <p>Resources explored this month: <strong>18</strong></p>
+            <p>Active programs: <strong id="active-programs-count">0</strong></p>
+            <p>Latest mood trend: <strong id="mood-trend">Balanced</strong></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Resources -->
+      <section id="resources-section" class="hidden">
+        <h2>Explore Wellness Resources</h2>
+        <input type="text" id="search" placeholder="Search by topic..." style="width:100%; padding:1rem; margin:1.5rem 0 2rem; border-radius:50px; border:1px solid #cbd5e1; font-size:1.1rem;" oninput="filterResources()">
+
+        <div id="resources-list" class="grid-2"></div>
+      </section>
+
+      <!-- Programs -->
+      <section id="programs-section" class="hidden">
+        <h2>My Wellness Programs</h2>
+        <p style="margin-bottom:1.5rem; color:var(--gray);">Join programs and access related online support</p>
+        <div id="programs-list" class="grid-3"></div>
+      </section>
+
+      <!-- Support -->
+      <section id="support-section" class="hidden">
+        <h2>We're Here For You</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Immediate Help</h3>
+            <p><strong>988 Suicide & Crisis Lifeline</strong> — Call or text 988 (24/7, free, confidential)</p>
+            <p><strong>Crisis Text Line</strong> — Text HOME to 741741</p>
+            <p>Campus counseling email: <a href="mailto:counseling@university.edu">counseling@university.edu</a></p>
+          </div>
+          <div class="card">
+            <h3>Anonymous Feedback</h3>
+            <textarea placeholder="What support would help you most right now?..." rows="6"></textarea>
+            <button class="btn" style="margin-top:1.2rem;" onclick="alert('Thank you — your feedback is anonymous and appreciated.')">Send Feedback</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Admin Panel -->
+      <section id="admin-section" class="hidden">
+        <h2>Admin Panel – February 2026</h2>
+
+        <div class="metrics-grid">
+          <div class="metric-card"><div class="metric-number">1,472</div><div>Active Students</div></div>
+          <div class="metric-card"><div class="metric-number">89</div><div>Programs Running</div></div>
+          <div class="metric-card"><div class="metric-number">418</div><div>Resource Views (Week)</div></div>
+          <div class="metric-card"><div class="metric-number">27</div><div>Support Interactions</div></div>
+        </div>
+
+        <div class="card">
+          <h3>Student Health Overview (Mock Data)</h3>
+          <div id="student-health-list" class="grid-3"></div>
+        </div>
+
+        <div class="card">
+          <h3>Create New Wellness Program</h3>
+          <div class="form-group">
+            <label>Program Name</label>
+            <input type="text" id="new-program-name" placeholder="e.g., Midterm Stress Relief Challenge"/>
+          </div>
+          <div class="form-group">
+            <label>Description / Goal</label>
+            <textarea id="new-program-desc" rows="4" placeholder="Help students reduce stress with daily 10-min practices..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Duration (days)</label>
+            <input type="number" id="new-program-days" value="21" min="7" max="90"/>
+          </div>
+          <div class="form-group">
+            <label>Target Focus</label>
+            <select id="new-program-focus">
+              <option>Mental Health</option>
+              <option>Fitness</option>
+              <option>Nutrition</option>
+            </select>
+          </div>
+          <button class="btn" onclick="addProgram()"><i class="fas fa-plus"></i> Create Program</button>
+        </div>
+
+        <div class="card">
+          <h3>Create New Resource</h3>
+          <div class="form-group"><label>Title</label><input type="text" id="new-title" placeholder="e.g., Managing Exam Stress"/></div>
+          <div class="form-group"><label>Category</label><select id="new-category"><option>Mental Health</option><option>Fitness</option><option>Nutrition</option></select></div>
+          <div class="form-group"><label>Short Description</label><textarea id="new-content" rows="4" placeholder="Key points or link summary..."></textarea></div>
+          <button class="btn" onclick="addResource()"><i class="fas fa-plus"></i> Add Resource</button>
+        </div>
+      </section>
+
+    </div>
+
+    <footer>
+      <p>© 2026 University Wellness Services • Your privacy is protected • Demo version</p>
+    </footer>
+  </div>
+
+  <script>
+    let currentRole = "student";
+    let currentMood = "Not set";
+
+    // Resources strictly limited to Mental Health, Fitness, Nutrition (updated/expanded with free student-friendly options)
+    let resources = [
+      // Mental Health Support
+      { title: "988 Suicide & Crisis Lifeline", category: "Mental Health", desc: "24/7 free, confidential support – call or text 988", link: "https://988lifeline.org/" },
+      { title: "Crisis Text Line", category: "Mental Health", desc: "Text HOME to 741741 for 24/7 crisis support", link: "https://www.crisistextline.org/" },
+      { title: "Headspace – Free Basics & Meditation", category: "Mental Health", desc: "Guided mindfulness, sleep & stress tools (free basics available)", link: "https://www.headspace.com/" },
+      { title: "The Jed Foundation – College Mental Health", category: "Mental Health", desc: "Free toolkit, self-help & suicide prevention resources for students", link: "https://jedfoundation.org/" },
+      { title: "Active Minds – Student Mental Health", category: "Mental Health", desc: "Peer-led support, advocacy & free campus resources", link: "https://www.activeminds.org/" },
+
+      // Fitness Programs
+      { title: "Nike Training Club", category: "Fitness", desc: "Free guided workouts – strength, yoga, endurance (no equipment needed)", link: "https://www.nike.com/ntc-app" },
+      { title: "Fitness Blender – Free Videos", category: "Fitness", desc: "Hundreds of free full-length workout videos for all levels", link: "https://www.fitnessblender.com/" },
+
+      // Nutrition Advice
+      { title: "MyPlate – Healthy Eating for Young Adults", category: "Nutrition", desc: "USDA guide: balanced meals, portion tips & budget eating", link: "https://www.myplate.gov/life-stages/young-adults" },
+      { title: "Harvard Healthy Eating Plate", category: "Nutrition", desc: "Visual guide to healthy plates – veggies, grains, proteins", link: "https://nutritionsource.hsph.harvard.edu/healthy-eating-plate/" },
+      { title: "EatRight – Student Nutrition Tips", category: "Nutrition", desc: "Academy of Nutrition fact sheets & meal ideas for college life", link: "https://www.eatright.org/" }
+    ];
+
+    // Programs with real external links when joined
+    let programs = JSON.parse(localStorage.getItem("wellnessPrograms")) || [
+      { id: 1, name: "30-Day Stress Less Challenge", desc: "Daily mindfulness & breathing exercises", focus: "Mental Health", duration: 30, participants: 142, link: "https://www.headspace.com/meditation/stress" },
+      { id: 2, name: "Campus Walks & Move More", desc: "Build daily activity & walking habits", focus: "Fitness", duration: 28, participants: 89, link: "https://www.nike.com/ntc-app" },
+      { id: 3, name: "Dorm-Friendly Healthy Eating", desc: "Quick, budget-friendly nutrition & meal prep", focus: "Nutrition", duration: 14, participants: 67, link: "https://www.myplate.gov/life-stages/young-adults" },
+      { id: 4, name: "Mindful Eating Reset", desc: "Improve relationship with food & balanced choices", focus: "Nutrition", duration: 21, participants: 45, link: "https://www.eatright.org/" }
+    ];
+
+    const mockStudents = [
+      { name: "Alex Kim", moodTrend: "Good", lastMood: "Great", activePrograms: 2, activity: "High" },
+      { name: "Jordan Lee", moodTrend: "Moderate", lastMood: "Okay", activePrograms: 1, activity: "Medium" },
+      { name: "Taylor Chen", moodTrend: "Needs Attention", lastMood: "Struggling", activePrograms: 0, activity: "Low" },
+      { name: "Sam Rivera", moodTrend: "Good", lastMood: "Great", activePrograms: 3, activity: "High" }
+    ];
+
+    function login() {
+      currentRole = document.querySelector('input[name="role"]:checked').value;
+      document.getElementById("auth-screen").classList.add("hidden");
+      document.getElementById("app").classList.remove("hidden");
+
+      document.getElementById("user-name").textContent = currentRole === "admin" ? "Admin" : "Student";
+
+      document.getElementById("admin-btn").classList.toggle("hidden", currentRole !== "admin");
+
+      updateDashboard();
+      renderResources();
+      renderPrograms();
+      if (currentRole === "admin") renderStudentHealth();
+      showSection("dashboard");
+    }
+
+    function logout() {
+      document.getElementById("app").classList.add("hidden");
+      document.getElementById("auth-screen").classList.remove("hidden");
+    }
+
+    function showSection(id) {
+      document.querySelectorAll('#app section').forEach(s => s.classList.add("hidden"));
+      document.getElementById(`${id}-section`).classList.remove("hidden");
+      document.getElementById("page-title").textContent = id === "programs" ? "My Programs" : (id.charAt(0).toUpperCase() + id.slice(1));
+    }
+
+    function renderResources(filter = "") {
+      const container = document.getElementById("resources-list");
+      container.innerHTML = "";
+
+      resources
+        .filter(r => !filter || r.title.toLowerCase().includes(filter.toLowerCase()) || r.category.toLowerCase().includes(filter.toLowerCase()))
+        .forEach(r => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.innerHTML = `
+            <h3>${r.title}</h3>
+            <small style="color:var(--accent); font-weight:600;">${r.category}</small>
+            <p style="margin:1rem 0;">${r.desc}</p>
+            <a href="${r.link}" target="_blank" class="btn btn-outline"><i class="fas fa-external-link-alt"></i> Access Resource</a>
+          `;
+          container.appendChild(div);
+        });
+    }
+
+    function filterResources() {
+      renderResources(document.getElementById("search").value);
+    }
+
+    function renderPrograms() {
+      const container = document.getElementById("programs-list");
+      container.innerHTML = "";
+
+      programs.forEach(p => {
+        const isActive = localStorage.getItem(`program_${p.id}_active`) === "true";
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+          <h3>${p.name}</h3>
+          <p>${p.desc}</p>
+          <p style="margin:0.8rem 0;"><strong>Focus:</strong> ${p.focus} • <strong>Duration:</strong> ${p.duration} days</p>
+          ${currentRole === "admin" ? `<p><small>${p.participants || 0} students participating</small></p>` : ''}
+          ${isActive ? 
+            `<a href="${p.link}" target="_blank" class="btn btn-success"><i class="fas fa-external-link-alt"></i> Start / Continue Online</a>` :
+            `<button class="btn" onclick="toggleProgram(${p.id})"><i class="fas fa-play"></i> Join Program</button>`
+          }
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function toggleProgram(id) {
+      const key = `program_${id}_active`;
+      const current = localStorage.getItem(key) === "true";
+      localStorage.setItem(key, (!current).toString());
+      updateDashboard();
+      renderPrograms();
+      alert(current ? "You have left the program." : "Joined! Click the button to access the related online program.");
+    }
+
+    function addProgram() {
+      const name = document.getElementById("new-program-name").value.trim();
+      const desc = document.getElementById("new-program-desc").value.trim();
+      const days = parseInt(document.getElementById("new-program-days").value);
+      const focus = document.getElementById("new-program-focus").value;
+
+      if (!name || !desc) return alert("Please fill in name and description");
+
+      const newId = programs.length ? Math.max(...programs.map(p => p.id)) + 1 : 1;
+
+      // Default real link based on focus
+      let link = "#";
+      if (focus === "Mental Health") link = "https://www.headspace.com/";
+      else if (focus === "Fitness") link = "https://www.nike.com/ntc-app";
+      else if (focus === "Nutrition") link = "https://www.myplate.gov/";
+
+      programs.push({
+        id: newId,
+        name,
+        desc,
+        focus,
+        duration: days,
+        participants: 1,
+        link
+      });
+
+      localStorage.setItem("wellnessPrograms", JSON.stringify(programs));
+      renderPrograms();
+      alert("Program created! When joined, students can access the linked online resource.");
+      document.getElementById("new-program-name").value = "";
+      document.getElementById("new-program-desc").value = "";
+    }
+
+    function renderStudentHealth() {
+      const container = document.getElementById("student-health-list");
+      container.innerHTML = "";
+
+      mockStudents.forEach(s => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+          <h3>${s.name}</h3>
+          <p>Mood trend: <span class="${s.moodTrend === 'Good' ? 'status-good' : s.moodTrend.includes('Attention') ? 'status-low' : 'status-mid'}">${s.moodTrend}</span></p>
+          <p>Last check-in: ${s.lastMood}</p>
+          <p>Active programs: ${s.activePrograms}</p>
+          <p>Activity level: ${s.activity}</p>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function addResource() {
+      const title = document.getElementById("new-title").value.trim();
+      const cat = document.getElementById("new-category").value;
+      const desc = document.getElementById("new-content").value.trim();
+
+      if (!title || !["Mental Health", "Fitness", "Nutrition"].includes(cat)) return alert("Please add title and select valid category (Mental Health, Fitness, Nutrition)");
+
+      resources.push({ title, category: cat, desc: desc || "New resource", link: "#" });
+      renderResources();
+      alert("Resource added!");
+      document.getElementById("new-title").value = "";
+      document.getElementById("new-content").value = "";
+    }
+
+    function setMood(mood) {
+      currentMood = mood;
+      document.getElementById("current-mood").textContent = mood;
+      document.getElementById("mood-trend").textContent = mood === "Great" ? "Positive" : mood === "Okay" ? "Stable" : "Needs Support";
+      alert(`Mood updated: ${mood}`);
+    }
+
+    function updateDashboard() {
+      let count = 0;
+      programs.forEach(p => {
+        if (localStorage.getItem(`program_${p.id}_active`) === "true") count++;
+      });
+      document.getElementById("active-programs-count").textContent = count;
+    }
+
+    // Floating symbols
+    const symbolsContainer = document.getElementById("symbols");
+    const icons = ["❤️", "💪", "🍎", "🥗", "🧠", "🌿", "🧘", "🏃", "💧"];
+    for (let i = 0; i < 18; i++) {
+      const sym = document.createElement("div");
+      sym.className = "symbol";
+      sym.textContent = icons[Math.floor(Math.random() * icons.length)];
+      sym.style.left = Math.random() * 100 + "vw";
+      sym.style.animationDelay = Math.random() * -20 + "s";
+      sym.style.animationDuration = (15 + Math.random() * 15) + "s";
+      sym.style.fontSize = (1.8 + Math.random() * 2.2) + "rem";
+      symbolsContainer.appendChild(sym);
+    }
+  </script>
+</body>
+</html>
